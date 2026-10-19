@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Valoseñal</title>
+<style>
+:root{--bg:#0f1923;--fg:#ece8e1;--muted:#8b97a3;--sig:#f5c518;--alarm:#ff4655;--line:#2a3745;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1923;--fg:#ece8e1;--muted:#8b97a3;--line:#2a3745}}
+:root[data-theme="dark"]{--bg:#0f1923;--fg:#ece8e1;--muted:#8b97a3;--line:#2a3745}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--fg);font-family:Impact,"Arial Narrow",system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:20px;text-align:center}
+#flash{position:fixed;inset:0;background:var(--alarm);opacity:0;pointer-events:none;z-index:1}
+#btn{position:relative;z-index:2;width:min(78vw,340px);aspect-ratio:1;border-radius:50%;border:8px solid #0f1923;background:var(--sig);color:#0f1923;font:inherit;font-size:clamp(30px,10vw,50px);letter-spacing:.03em;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;touch-action:manipulation}
+#btn svg{width:48%;height:auto}
+#btn:focus-visible{outline:4px solid var(--fg);outline-offset:6px}
+#btn.on{background:var(--alarm);color:#fff;animation:pulse .5s infinite alternate}
+#btn.on svg path{fill:#fff}
+@keyframes pulse{to{transform:scale(1.05)}}
+#st{position:relative;z-index:2;margin:0;font-family:system-ui,sans-serif;font-size:15px;color:var(--muted)}
+.opt{position:relative;z-index:2;font-family:system-ui,sans-serif;font-size:14px;color:var(--muted);display:flex;gap:8px;align-items:center}
+.warn{position:relative;z-index:2;max-width:320px;margin:0;font-family:system-ui,sans-serif;font-size:12px;line-height:1.5;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+@media (prefers-reduced-motion:reduce){#btn.on{animation:none}}
+</style>
+</head>
+<body>
+<div id="flash"></div>
+<button id="btn" aria-pressed="false" aria-label="Lanzar la Valoseñal">
+<svg viewBox="0 0 100 90" aria-hidden="true"><path fill="#0f1923" d="M4 10H32L60 62L52 78Z"/><path fill="#0f1923" d="M96 10H70L52 42L60 56Z"/></svg>
+VALOSEÑAL
+</button>
+<p id="st" role="status">Toca para activar. Toca otra vez para parar.</p>
+<label class="opt"><input type="checkbox" id="strobe" checked> Destellos estroboscópicos</label>
+<p class="warn">Aviso: los destellos rápidos pueden provocar crisis en personas con epilepsia fotosensible. Desmarca la casilla si es tu caso. Sube el volumen multimedia del móvil al máximo antes de pulsar. Si no suena, comprueba que el modo silencio esté desactivado.</p>
+<script>
+var on=false,tFlash,tVib,lock=null,ctx,nodes=[];
+var btn=document.getElementById('btn'),fl=document.getElementById('flash'),st=document.getElementById('st'),sb=document.getElementById('strobe');
+function makeWav(){
+  var sr=22050,T=2,n=sr*T,buf=new ArrayBuffer(44+n*2),v=new DataView(buf);
+  function w(o,s){for(var i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))}
+  w(0,'RIFF');v.setUint32(4,36+n*2,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,n*2,true);
+  var p=0;
+  for(var i=0;i<n;i++){
+    var t=i/sr,f=600+300*Math.sin(2*Math.PI*t/T);
+    p+=2*Math.PI*f/sr;
+    var s=0.6*(Math.sin(p)>=0?1:-1)+0.4*Math.sin(p);
+    v.setInt16(44+i*2,Math.max(-1,Math.min(1,s*0.95))*32767,true);
+  }
+  return URL.createObjectURL(new Blob([buf],{type:'audio/wav'}));
+}
+var audio=new Audio();audio.src=makeWav();audio.loop=true;audio.volume=1;audio.preload='auto';
+function fallback(){
+  try{
+    ctx=ctx||new(window.AudioContext||window.webkitAudioContext)();
+    if(ctx.state==='suspended')ctx.resume();
+    var o=ctx.createOscillator(),l=ctx.createOscillator(),d=ctx.createGain(),g=ctx.createGain();
+    o.type='square';o.frequency.value=600;l.frequency.value=0.5;d.gain.value=300;g.gain.value=1;
+    l.connect(d);d.connect(o.frequency);o.connect(g);g.connect(ctx.destination);o.start();l.start();nodes=[o,l];
+  }catch(e){}
+}
+function start(){
+  on=true;btn.classList.add('on');btn.setAttribute('aria-pressed','true');
+  st.textContent='ALERTA ACTIVA. Toca para parar.';
+  try{audio.currentTime=0;var pr=audio.play();if(pr&&pr.catch)pr.catch(fallback)}catch(e){fallback()}
+  var x=false,calm=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(sb.checked&&!calm){tFlash=setInterval(function(){x=!x;fl.style.opacity=x?'1':'0'},110)}
+  else{fl.style.opacity='0.35'}
+  try{if(navigator.vibrate){navigator.vibrate([400,150]);tVib=setInterval(function(){navigator.vibrate([400,150])},600)}}catch(e){}
+  try{navigator.wakeLock&&navigator.wakeLock.request('screen').then(function(l){lock=l}).catch(function(){})}catch(e){}
+}
+function stop(){
+  on=false;btn.classList.remove('on');btn.setAttribute('aria-pressed','false');
+  st.textContent='Toca para activar. Toca otra vez para parar.';
+  try{audio.pause()}catch(e){}
+  nodes.forEach(function(n){try{n.stop()}catch(e){}});nodes=[];
+  clearInterval(tFlash);clearInterval(tVib);fl.style.opacity='0';
+  try{navigator.vibrate&&navigator.vibrate(0)}catch(e){}
+  try{lock&&lock.release();lock=null}catch(e){}
+}
+btn.addEventListener('click',function(){on?stop():start()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&on)stop()});
+</script>
+</body>
+</html>
