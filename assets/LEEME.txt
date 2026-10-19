@@ -1,0 +1,5 @@
+Sube aqui (con estos nombres exactos):
+  gekko.png  omen.png  jett.png   -> fotos redondas de los agentes (cuadradas, ~200x200 px)
+  gameplay.webm (o gameplay.mp4)  -> clip corto sin audio para la bola de cristal
+  gameplay.gif                     -> alternativa si solo tienes un gif
+Si falta algun archivo, la web muestra una version de respaldo.
