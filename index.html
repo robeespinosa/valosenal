@@ -68,7 +68,7 @@ html,body{overflow-x:clip;max-width:100vw}body{background:#03060d}.stage{width:1
 .vig{position:fixed;inset:0;z-index:3;pointer-events:none;background:radial-gradient(ellipse at 50% 50%,transparent 52%,rgba(0,0,0,.78) 100%);box-shadow:inset 70px 0 90px -40px rgba(255,0,90,.35),inset -70px 0 90px -40px rgba(0,190,255,.4)}
 .scan{position:fixed;inset:0;z-index:4;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.04) 0 1px,transparent 1px 3px);animation:sc 6s linear infinite;mix-blend-mode:overlay}
 @keyframes sc{to{background-position:0 60px}}
-.stage{position:relative;z-index:2;max-width:none;margin:0;padding:14px 26px 16px;min-height:100vh;display:grid;gap:14px 20px;grid-template-columns:minmax(0,1fr) minmax(260px,.85fr) minmax(0,1fr);grid-template-rows:auto 1fr 1fr auto;grid-template-areas:"hd hd hd" "a core c" "b core d" ". dock .";perspective:1300px}
+.stage{position:relative;z-index:2;max-width:none;margin:0;padding:14px 26px 16px;min-height:100vh;display:grid;gap:14px 20px;grid-template-columns:minmax(0,1fr) minmax(260px,.85fr) minmax(0,1fr);grid-template-rows:auto 1fr 1fr auto;grid-template-areas:"hd hd hd" "a core c" "b core d" ". dock .";perspective:900px}
 body.gl .stage{filter:hue-rotate(35deg) saturate(1.6);translate:4px 0}
 .hd{grid-area:hd;display:flex;justify-content:space-between;align-items:center;gap:10px}
 h1{position:relative;animation:gt 5s infinite}
@@ -81,11 +81,11 @@ h1{position:relative;animation:gt 5s infinite}
 @keyframes flt{to{translate:0 -5px}}
 .pn>.in{height:100%;padding:16px 20px;clip-path:polygon(0 16px,16px 0,calc(100% - 30px) 0,100% 30px,100% calc(100% - 16px),calc(100% - 16px) 100%,30px 100%,0 calc(100% - 30px));background:linear-gradient(160deg,rgba(6,28,52,.74),rgba(3,10,24,.82));backdrop-filter:blur(7px);border:1px solid rgba(0,245,212,.6)}
 .pn>.in.glow{box-shadow:0 0 50px rgba(0,245,212,.55) inset}
-.a,.b{transform:rotateY(14deg);transform-origin:0 50%}.c,.d{transform:rotateY(-14deg);transform-origin:100% 50%}
+.a{transform:rotateY(26deg) rotateX(6deg)}.b{transform:rotateY(26deg) rotateX(-6deg)}.c{transform:rotateY(-26deg) rotateX(6deg)}.d{transform:rotateY(-26deg) rotateX(-6deg)}.a,.b{transform-origin:0 50%}.c,.d{transform-origin:100% 50%}
 .a{grid-area:a}.b{grid-area:b;animation-delay:-3s}.c{grid-area:c}.d{grid-area:d;animation-delay:-3s}
 .core{grid-area:core;position:relative;display:flex;align-items:center;justify-content:center}
 .globe{width:min(100%,64vh);aspect-ratio:1}.globe canvas{width:100%;height:100%}
-.dock{grid-area:dock;justify-self:center;transform:rotateX(-14deg)}
+.dock{grid-area:dock;justify-self:center;transform:rotateX(-20deg);transform-origin:50% 0}
 .dock .in{display:flex;gap:28px;padding:10px 36px}
 .dock button{background:none;border:1px solid var(--line);border-radius:50%;width:46px;height:46px;color:var(--cy);cursor:pointer;display:flex;align-items:center;justify-content:center}.dock button:hover{box-shadow:0 0 18px var(--cy)}
 .ttl{font:500 10px Orbitron,system-ui;letter-spacing:.25em;color:var(--cy);margin:0 0 8px;opacity:.85}
@@ -110,6 +110,11 @@ h1{position:relative;animation:gt 5s infinite}
 .ag img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .ag figcaption{font:600 10px Orbitron,system-ui;letter-spacing:.22em;color:var(--c)}
 @keyframes ag{50%{box-shadow:0 0 26px var(--c)}}
+.pn>.in{background-image:linear-gradient(90deg,rgba(0,245,212,.14),transparent 16%,transparent 84%,rgba(0,245,212,.14)),linear-gradient(160deg,rgba(6,28,52,.74),rgba(3,10,24,.82))}
+@media (min-width:1001px){.hd{transform:rotateX(-10deg);transform-origin:50% 100%}}
+.ball{width:57%;background:radial-gradient(circle,rgba(0,50,110,.35),rgba(0,10,30,.55))}
+.ball video{opacity:.85}.ball canvas{position:absolute;inset:0;width:100%;height:100%;display:none;mix-blend-mode:screen}
+.ball.gl canvas{display:block}.ball.gl video{opacity:0}
 </style></head><body>
 <div id="flash"></div><canvas id="bg"></canvas><canvas id="fx"></canvas><div class="vig"></div><div class="scan"></div>
 <main id="main" class="stage">
@@ -124,7 +129,7 @@ h1{position:relative;animation:gt 5s infinite}
 <section class="pn b"><div class="in"><p class="ttl">// RACHA</p><div class="streak"><div class="fl"><svg id="fire" viewBox="0 0 100 120" width="96" height="110"><defs><linearGradient id="g1" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ff3d00"/><stop offset=".6" stop-color="#ff9f1c"/><stop offset="1" stop-color="#ffe066"/></linearGradient></defs><path d="M50 4C60 28 86 42 86 76c0 24-16 40-36 40S14 100 14 76c0-18 9-26 16-38 3 12 10 17 15 17C42 36 42 18 50 4z" fill="url(#g1)"/><path class="in" d="M50 56C56 70 68 76 68 92c0 12-8 20-18 20s-18-8-18-20c0-9 5-13 8-19 2 6 6 8 8 8-2-8-1-17 2-25z" fill="#fff3b0" opacity=".9"/></svg></div>
 <div class="sn"><b id="sk">0</b><span>DÍAS EN POSITIVO SEGUIDOS</span><span id="bs">RÉCORD: 0</span><div class="chip" id="chip">SIN PARTIDAS HOY</div></div></div>
 <div class="hist" id="hist" aria-label="Últimos 14 días"></div></div></section>
-<section class="core" id="core"><div class="globe"><canvas id="gl" width="700" height="700"></canvas><div class="ball"><video id="gv" autoplay muted loop playsinline preload="metadata" aria-hidden="true"><source src="assets/gameplay.webm" type="video/webm"><source src="assets/gameplay.mp4" type="video/mp4"></video><img id="gg" alt="" hidden></div></div></section>
+<section class="core" id="core"><div class="globe"><canvas id="gl" width="700" height="700"></canvas><div class="ball"><video id="gv" autoplay muted loop playsinline preload="metadata" aria-hidden="true"><source src="assets/gameplay.webm" type="video/webm"><source src="assets/gameplay.mp4" type="video/mp4"></video><img id="gg" alt="" hidden><canvas id="gw" width="480" height="480"></canvas></div></div></section>
 <section class="pn c"><div class="in"><p class="ttl">// COMUNICACIONES</p><div class="row"><input id="who" placeholder="Tu nombre" maxlength="20" aria-label="Tu nombre"><button id="arm">Activar avisos</button></div>
 <p id="net" role="status">Pulsa “Activar avisos” para recibir la señal en este dispositivo.</p>
 <button id="btn" aria-pressed="false" aria-label="Lanzar la Valoseñal"><svg viewBox="0 0 100 90" aria-hidden="true"><path d="M4 10H32L60 62L52 78Z"/><path d="M96 10H70L52 42L60 56Z"/></svg>LLAMAR A PARTIDA</button>
@@ -306,5 +311,32 @@ extra(today());
 ss[ss.length-1].addEventListener('error',function(){v.hidden=true;gg.hidden=false;gg.onerror=function(){ball.classList.add('empty')};gg.src='assets/gameplay.gif'});
 try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)v.removeAttribute('autoplay')}catch(e){}
 if('IntersectionObserver' in window)new IntersectionObserver(function(e){try{if(e[0].isIntersecting){var p=v.play();p&&p.catch(function(){})}else v.pause()}catch(x){}}).observe(v);
+})();
+</script><script>
+(function(){
+var v=$('gv'),c=$('gw'),ball=document.querySelector('.ball'),gl;
+try{gl=c.getContext('webgl',{alpha:true,premultipliedAlpha:true})}catch(e){}
+if(!gl)return;
+var FRAG=`precision mediump float;uniform sampler2D t;varying vec2 v;
+void main(){float r=length(v);if(r>1.){discard;}
+float nr=asin(min(r,.999))/1.5708;vec2 u=r>.001?v/r*nr:v;u*=.9;vec2 s=vec2(u.x,-u.y)*.5+.5;
+float ab=.02*r*r;vec3 c=vec3(texture2D(t,s+vec2(ab,0.)).r,texture2D(t,s).g,texture2D(t,s-vec2(ab,0.)).b);
+float f=pow(r,3.);c=mix(c,vec3(0.,.8,1.),f*.35);c*=1.-.35*pow(r,4.);
+float a=.78-.2*f;gl_FragColor=vec4(c*a,a);}`;
+function sh(t,src){var x=gl.createShader(t);gl.shaderSource(x,src);gl.compileShader(x);return x}
+var pr=gl.createProgram();
+gl.attachShader(pr,sh(gl.VERTEX_SHADER,'attribute vec2 p;varying vec2 v;void main(){v=p;gl_Position=vec4(p,0.,1.);}'));
+gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,FRAG));gl.linkProgram(pr);
+if(!gl.getProgramParameter(pr,gl.LINK_STATUS))return;
+gl.useProgram(pr);
+gl.bindBuffer(gl.ARRAY_BUFFER,gl.createBuffer());gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+var l=gl.getAttribLocation(pr,'p');gl.enableVertexAttribArray(l);gl.vertexAttribPointer(l,2,gl.FLOAT,false,0,0);
+gl.bindTexture(gl.TEXTURE_2D,gl.createTexture());
+gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+var last=0;
+function draw(ts){requestAnimationFrame(draw);if(document.hidden||v.paused||v.readyState<2||ts-last<33)return;last=ts;
+try{gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,v);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);ball.classList.add('gl')}catch(e){}}
+requestAnimationFrame(draw);
 })();
 </script></body></html>
